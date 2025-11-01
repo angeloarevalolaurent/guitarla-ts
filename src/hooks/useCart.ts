@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react"
 import { db } from "../data/db"
+import type { Guitar, CartItem } from '../types';
 
 export default function useCart() {
 
     // Función para obtener el carrito inicial desde localStorage
-        const initialCart = () => {
+        const initialCart = () : CartItem[] => {
             const localStorageCart = localStorage.getItem('cart');
             return localStorageCart ? JSON.parse(localStorageCart) : [];
         };
@@ -24,7 +25,7 @@ export default function useCart() {
         }, [cart]);  
     
         // Agregar un item al carrito
-        function addToCart(item) {
+        function addToCart(item : Guitar) {
     
             const itemExists = cart.findIndex(guitar => guitar.id === item.id);
     
@@ -36,18 +37,18 @@ export default function useCart() {
                 updatedCart[itemExists].quantity++
                 setCart(updatedCart);
             } else {
-                item.quantity = 1;
-                setCart([...cart, item])
+                const newItem: CartItem = { ...item, quantity: 1 };
+                setCart([...cart, newItem])
             }
         }
     
         // Eliminar un item del carrito
-        function removeFromCart(id) {
+        function removeFromCart(id : Guitar['id']) {
             setCart(prevCart => prevCart.filter(guitar => guitar.id !== id));       
         }
     
         // Aumentar la cantidad de un item en el carrito
-        function increaseQuantity(id) {
+        function increaseQuantity(id : Guitar['id']) {
             const updatedCart = cart.map(item => { 
                 if (item.id === id && item.quantity < MAX_ITEMS) {
                     return { ...item, quantity: item.quantity + 1 };
@@ -59,7 +60,7 @@ export default function useCart() {
     
     
         // Disminuir la cantidad de un item en el carrito
-        function decreaseQuantity(id) {
+        function decreaseQuantity(id : Guitar['id']) {
             const updatedCart = cart.map(item => { 
                 if (item.id === id && item.quantity > MIN_ITEMS) {
                     return { ...item, quantity: item.quantity - 1 };
